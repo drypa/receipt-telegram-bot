@@ -33,8 +33,42 @@ func Start(options Options) error {
 
 	go http.ListenAndServeTLS(":8443", options.CertPath, options.KeyPath, nil)
 
+	processUpdates(updatesChan, bot)
+	return nil
+}
+
+func processUpdates(updatesChan tgbotapi.UpdatesChannel, bot *tgbotapi.BotAPI) {
 	for update := range updatesChan {
 		log.Printf("%v\n", update)
+		if update.Message == nil {
+			continue
+		}
+		var responseText string
+		switch update.Message.Text {
+		case "":
+			responseText = "Please enter a command."
+		case "/start":
+			responseText = "I'm a bot to collect Your purchase tickets."
+		case "/register":
+			register(update.Message.From.ID)
+			responseText = "You are registered. I collect only your virtual telegram Id."
+		default:
+			err := tryAddReceipt(update.Message.From.ID, update.Message.Text)
+			responseText = "Added"
+			if err != nil {
+				responseText = err.Error()
+			}
+		}
+		msg := tgbotapi.NewMessage(update.Message.Chat.ID, responseText)
+		bot.Send(msg)
 	}
-	return nil
+}
+
+func tryAddReceipt(userId int, messageText string) error {
+	//TODO: validate receipt query string and store
+	panic("not implemented exception")
+}
+
+func register(userId int) {
+	//TODO: store user to DB
 }
