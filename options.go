@@ -1,6 +1,7 @@
 package telegram_bot
 
 import (
+	"errors"
 	"fmt"
 	"os"
 	"strconv"
@@ -30,6 +31,33 @@ func FromEnv() Options {
 		CertPath:   certPath,
 		KeyPath:    keyPath,
 	}
+}
+
+func (options Options) validate() error {
+	err := validateEmpty(options.ApiToken, "Api token is not set")
+	if err != nil {
+		return err
+	}
+	err = validateEmpty(options.WebHookUrl, "Web hook url is not set")
+	if err != nil {
+		return err
+	}
+	err = validateEmpty(options.CertPath, "Certificate path is not set")
+	if err != nil {
+		return err
+	}
+	err = validateEmpty(options.KeyPath, "SSL key file path is not set")
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func validateEmpty(value string, emptyErrorMessage string) error {
+	if value == "" {
+		return errors.New(emptyErrorMessage)
+	}
+	return nil
 }
 
 func getEnvVar(varName string) string {

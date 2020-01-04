@@ -7,6 +7,12 @@ import (
 )
 
 func Start(options Options) error {
+	err := options.validate()
+	if err != nil {
+		log.Println("Bot options invalid")
+		return err
+	}
+
 	bot, err := tgbotapi.NewBotAPI(options.ApiToken)
 	if err != nil {
 		log.Println("Bot create error")
