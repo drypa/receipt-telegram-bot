@@ -1,4 +1,4 @@
-module github.com/drypa/receipt-telegram-bot.git
+module github.com/drypa/receipt-telegram-bot
 
 go 1.13
 
